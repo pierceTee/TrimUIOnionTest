@@ -2,47 +2,41 @@
 An application to track your time played on trimUI devices
 
 ## Dev notes
-
-### 1-15-25
-#### Activity Tracker
-
-- on MinUI Piping the output of ps when a game is running vs not into txt files reveals these two processes
-```
-
-+ 3821 root      3840 S    {launch.sh} /bin/sh /mnt/SDCARD/.system/tg3040/paks/Emus/SFC.pak/launch.sh /mnt/SDCARD/Roms/Super Nintend
-+ 3826 root      314m R    minarch.elf /mnt/SDCARD/.system/tg3040/cores/snes9x2005_plus_libretro.so /mnt/SDCARD/Roms/Super Nintendo
-
-```
-Unfortunately it looks like the rom name is cutoff so we can't use this correctly. 
-
-First thoughts are to:
-- Override all the Emus/../launch.sh files ( not cross plat, hacky and will mess up when MinUI updates). 
-- See if I can get the full filenames from `ps` run a service to monitor for those strings. (Technically annoying to write and pretty hacky)
-
-## Brick Firmware General
-
-- `echo 1 >/tmp/stay_awake` to keep the device from going to sleep.
-
 - Analyzing the usb_storage app (`usr/trimui/apps/usb_storage`) it would be sweet if I could mount the brick as an external storage device to swap files in and out.
 
-- Brick used OpenWRT where all the system package information is stored in `/usr/lib/opkg/info/`, files here tell OpenWRT what files are associated with what packages, eg `/usr/lib/opkg/info/wifimanager-demo.list` has all the associated packages to `wifimanager`
 
-- All OS-level resources are in `/usr/trimui/res`, have fun swapping images and fonts out!
+## Brick Firmware General
+### 1-15-25
 
-To get device info 
-```
+### Dev tips and tricks
+- **ADB**  to get shell access and transfer files to and from the brick. Simply launch a terminal in the directory with files you want to transfer to/from and: 
+  - Plug in the brick via the bottom usb-c port.
+  - Run `adb devices` and copy the device ID that's listed. 
+  
+  ```sh
+  sample output
+  List of devices attached
+  9c000c64a5424801d9d device
+  ```
+  - To execute a terminal instance, run `adb -s <DEVICE_ID> shell` i.e `adb -s 9c000c64a5424801d9d shell`
+  - To transfer a file from the device, run `adb -s <DEVICE_ID> pull <SRC_DIR> <TARGET_DIR> ` i.e `adb -s 9c000c64a5424801d9d pull file.txt /documents`
+  - To tranfer a file to the device, run  `adb -s <DEVICE_ID> push <SRC_DIR> <TARGET_DIR> ` i.e `adb -s 9c000c64a5424801d9d push /documents/file.txt /mnt/SDCARD/Tools`
 
-root@TinaLinux:/tmp# cat sysinfo/board_name
-allwinner,a133
-root@TinaLinux:/tmp# cat sysinfo/model
-sun50iw10
 
-```
+- **Serial Debugging**: Alternative to ADB you can solder the TX/RX/GND lines on the back of the pcb, connect those to a USB to TTL device, use an application like putty to open serial communication, set the baud rate to 115200 and let it rip. The advantage of this over adb debugging is that serial communication is always running and doesn't require the adb service to be started. In most cases its best ot stick with adb though as its more consistent and user friendly.
+
+- **Keeping the device awake**: `echo 1 >/tmp/stay_awake` to keep the device from going to sleep.
+
+- **Package Management**: Brick used OpenWRT where all the system package information is stored in `/usr/lib/opkg/info/`, files here tell OpenWRT what files are associated with what packages, eg `/usr/lib/opkg/info/wifimanager-demo.list` has all the associated packages to `wifimanager`
+
+- **Stock OS Resources**: All OS-level resources are in `/usr/trimui/res`, have fun swapping images and fonts out!
+
+
 ## Firmware
-
+### 1-15-25
 The brick is running OpenWRT, a...router firmware aimed to give folks a fully configurable install but it primarliy focuses on networking funtionality, this is interesting because it is a single user OS (only root) so you can really get in there and mess things up, and it doesn't use any of the standard package managers. 
 
-### Available commands (from /bin)
+### Available commands (from `/bin`)
 ### System Commands
 
 #### Core Utils
@@ -439,8 +433,8 @@ zoneinfo-simple - 2018i-1
 zoneinfo-southamerica - 2018i-1
 ```
 
-### TrimUI Shell Scripts
-
+## TrimUI OS Shell Script analysis
+### 1-15-25
 *Found in `usr/trimui/bin`*
 
 
@@ -1125,8 +1119,9 @@ The way to get help information:
 we actually need to manually connect to our saved wifi router with `/bin/wifi_connect_ap_test "<wifi_name>" <wifi_pass>` to get the wifi to connect.
 
 
-1-17-25
+
 ## Wifi info 
+### 1-17-25
 
 So all wifi related actions/configs are located in `etc/wifi`.
 
