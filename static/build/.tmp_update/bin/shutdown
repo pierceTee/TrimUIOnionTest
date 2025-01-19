@@ -48,7 +48,7 @@ if [ "$0" = "/tmp/_shutdown" ]; then
 	umount /etc/passwd /etc/group /etc/profile
 	umount /mnt/SDCARD/miyoo/app/MainUI
 	umount /mnt/SDCARD/RetroArch/retroarch
-	umount /customer/lib/libgamename.so
+	umount //usr/trimui/lib/libgamename.so
 	swapoff /mnt/SDCARD/cachefile
 	umount -r /mnt/SDCARD
 	umount /mnt/SDCARD

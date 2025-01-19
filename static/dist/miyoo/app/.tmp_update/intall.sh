@@ -9,8 +9,9 @@ CORE_PACKAGE_FILE="$sysdir/onion.pak"
 RA_PACKAGE_FILE="/mnt/SDCARD/RetroArch/retroarch.pak"
 RA_VERSION_FILE="/mnt/SDCARD/RetroArch/onion_ra_version.txt"
 RA_PACKAGE_VERSION_FILE="/mnt/SDCARD/RetroArch/ra_package_version.txt"
-
-export LD_LIBRARY_PATH="/lib:/config/lib:/customer/lib:$sysdir/lib"
+## Pierce: use this instead of /cusomter/lib
+TRIMUI_LIB_DIR="/usr/trimui/lib"
+export LD_LIBRARY_PATH="/lib:/config/lib:/usr/trimui/lib:$sysdir/lib"
 export PATH="$sysdir/bin:$PATH"
 unset LD_PRELOAD
 
@@ -33,6 +34,8 @@ main() {
         cat /proc/ls
         sleep 1
     fi
+    ## Pierce: make sure we have the required pulseaudio lib
+    cp -rf lib/libpadsp.so $TRIMUI_LIB_DIR
 
     check_device_model
     check_install_ra
@@ -496,7 +499,7 @@ install_configs() {
 
 check_firmware() {
     echo ":: Check firmware"
-    if [ ! -f /customer/lib/libpadsp.so ]; then
+    if [ ! -f /usr/trimui/lib/libpadsp.so ]; then
         cd $sysdir
         infoPanel -i "res/firmware.png"
         rm -rf $sysdir

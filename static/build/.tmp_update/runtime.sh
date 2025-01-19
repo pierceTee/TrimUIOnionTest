@@ -106,7 +106,7 @@ main() {
     fi
 
     # Bind arcade name library to customer path
-    mount -o bind $miyoodir/lib/libgamename.so /customer/lib/libgamename.so
+    mount -o bind $miyoodir/lib/libgamename.so //usr/trimui/lib/libgamename.so
 
     rm -rf /tmp/is_booting
 
